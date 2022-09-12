@@ -1,6 +1,19 @@
+const express = require("express");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
+const app = express();
+const port = 5050;
+
+app.get("/videos", async (req, res) => {
+  await getYoutubeOrganicResults().then(res.json());
+});
+
+app.listen(port, () => {
+  console.log(`App running on ${port}`);
+});
+
+// #Puppeteer logic scrapper below
 puppeteer.use(StealthPlugin());
 
 // const searchString = `${game} trailer`
@@ -54,7 +67,7 @@ async function fillDataFromPage(page) {
 
 async function getYoutubeOrganicResults() {
   const browser = await puppeteer.launch({
-    headless: false,
+    headless: false, //set true for prod
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
@@ -62,12 +75,7 @@ async function getYoutubeOrganicResults() {
 
   const URL = `${requestParams.baseURL}/results?search_query=${requestParams.encodedQuery}`;
 
-  await page.setDefaultNavigationTimeout(60000);
-  await page.goto(URL);
-
   await page.waitForSelector("#contents > ytd-video-renderer");
-
-  await page.waitForTimeout(10000);
 
   const organicResults = await fillDataFromPage(page);
 
@@ -77,26 +85,3 @@ async function getYoutubeOrganicResults() {
 }
 
 getYoutubeOrganicResults().then(console.log);
-
-// const puppeteer = require("puppeteer");
-// const screenshot = "youtube_fm_dreams_video.png";
-// async () => {
-//   const browser = await puppeteer.launch({ headless: false });
-//   const page = await browser.newPage();
-//   await page.goto("https://youtube.com");
-//   await page.type("#search", "Fleetwood Mac Dreams");
-//   await page.click("button#search-icon-legacy");
-//   await page.waitForSelector("ytd-thumbnail.ytd-video-renderer");
-//   await page.screenshot({
-//     path: "youtube_fm_dreams_list.png",
-//   });
-//   const videos = await page.$$("ytd-thumbnail.ytd-video-renderer");
-//   await videos[2].click();
-//   await page.waitForSelector(".html5-video-container");
-//   await page.waitFor(5000);
-//   await page.screenshot({
-//     path: screenshot,
-//   });
-//   await browser.close();
-//   console.log("See screenshot: " + screenshot);
-// };
