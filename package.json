@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "puppeteer": "^17.1.3",
+    "puppeteer-extra": "^3.3.4",
+    "puppeteer-extra-plugin-stealth": "^2.11.1"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "trailer-scrapper",
+  "version": "1.0.0",
+  "main": "server.js",
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
