@@ -1,19 +1,6 @@
-const express = require("express");
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 
-const app = express();
-const port = 5050;
-
-app.get("/videos", async (req, res) => {
-  await getYoutubeOrganicResults().then(res.json());
-});
-
-app.listen(port, () => {
-  console.log(`App running on ${port}`);
-});
-
-// #Puppeteer logic scrapper below
 puppeteer.use(StealthPlugin());
 
 // const searchString = `${game} trailer`
@@ -67,7 +54,7 @@ async function fillDataFromPage(page) {
 
 async function getYoutubeOrganicResults() {
   const browser = await puppeteer.launch({
-    headless: false, //set true for prod
+    headless: false,
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
@@ -75,7 +62,12 @@ async function getYoutubeOrganicResults() {
 
   const URL = `${requestParams.baseURL}/results?search_query=${requestParams.encodedQuery}`;
 
+  await page.setDefaultNavigationTimeout(60000);
+  await page.goto(URL);
+
   await page.waitForSelector("#contents > ytd-video-renderer");
+
+  await page.waitForTimeout(10000);
 
   const organicResults = await fillDataFromPage(page);
 
