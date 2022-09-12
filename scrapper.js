@@ -4,8 +4,9 @@ const express = require("express");
 const app = express();
 const port = 5050;
 
-app.get("/videos", (req, res) => {
-  puppeteer.use(StealthPlugin());
+puppeteer.use(StealthPlugin());
+
+app.get("/videos", async (req, res) => {
   // const searchString = `${game} trailer`
   const searchString = "hitman 3 trailer"; // what we want to search
 
@@ -57,7 +58,7 @@ app.get("/videos", (req, res) => {
 
   async function getYoutubeOrganicResults() {
     const browser = await puppeteer.launch({
-      headless: false,
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
@@ -65,12 +66,9 @@ app.get("/videos", (req, res) => {
 
     const URL = `${requestParams.baseURL}/results?search_query=${requestParams.encodedQuery}`;
 
-    await page.setDefaultNavigationTimeout(60000);
     await page.goto(URL);
 
     await page.waitForSelector("#contents > ytd-video-renderer");
-
-    await page.waitForTimeout(10000);
 
     const organicResults = await fillDataFromPage(page);
 
@@ -79,7 +77,7 @@ app.get("/videos", (req, res) => {
     return organicResults;
   }
   
-  getYoutubeOrganicResults().then(console.log());
+  await getYoutubeOrganicResults().then(console.log());
 });
 
 app.listen(port, () => console.log(`listening on ${port}`));

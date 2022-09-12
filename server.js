@@ -62,12 +62,9 @@ async function getYoutubeOrganicResults() {
 
   const URL = `${requestParams.baseURL}/results?search_query=${requestParams.encodedQuery}`;
 
-  await page.setDefaultNavigationTimeout(60000);
   await page.goto(URL);
 
   await page.waitForSelector("#contents > ytd-video-renderer");
-
-  await page.waitForTimeout(10000);
 
   const organicResults = await fillDataFromPage(page);
 
